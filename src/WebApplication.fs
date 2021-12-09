@@ -18,6 +18,16 @@ open Lmc.JsonApi
 module LmcEnvironment =
     let publicIP = IPAddress.Parse "185.120.71.181"
 
+    let clientIP = function
+        // When request goes via loadbalancer, original client IP is stored in HTTP_X_FORWARDED_FOR
+        | ClientIpAddress.HttpXForwardedFor xForwardedFor -> Some xForwardedFor
+
+        // Docker / vagrant requests goes directly, ie. HTTP_X_FORWARDED_FOR is not set and client IP is in REMOTE_ADDR
+        | ClientIpAddress.RemoteIpAddress remoteIp -> Some remoteIp
+
+        // This is just a fallback, one of above methods should always return an IP
+        | _ -> None
+
     /// Check if request comes from internal "safe" network (ie. LMC offices, LMC proxy, vagrant, docker etc.).
     let isInternalRequest (httpContext: HttpContext) =
         match httpContext with
@@ -66,9 +76,9 @@ module Handler =
             >=> HEAD
             >=> text ""
 
-    let appRootStatus accessDenied status: HttpHandler =
+    let appRootStatus status: HttpHandler =
         route "/appRoot/status"
-            >=> requiresInternalRequest accessDenied
+            >=> requiresInternalRequest accessDeniedXml
             >=> warbler (status >> xml)
 
     let resourceNotFound: HttpHandler =
