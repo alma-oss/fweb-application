@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- [**BC**] Use net6.0
 
 ## 2.0.0 - 2021-12-09
 - [**BC**] Use `accessDeniedXml` in `appRootStatus` handler
