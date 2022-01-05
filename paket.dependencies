@@ -1,13 +1,13 @@
-framework: net5.0
+framework: net6.0
 
 source https://api.nuget.org/v3/index.json
-nuget FSharp.Core ~> 5.0
+nuget FSharp.Core ~> 6.0
 nuget FSharp.Data ~> 4.0
-nuget Giraffe ~> 5.0
+nuget Giraffe 6.0.0-alpha-2
 
 git ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git master Packages: /nuget/
 # LMC Nuget dependencies:
-nuget Lmc.JsonApi ~> 2.6
+nuget Lmc.JsonApi ~> 3.0
 
 nuget Expecto
 nuget YoloDev.Expecto.TestSdk
