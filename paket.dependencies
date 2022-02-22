@@ -7,7 +7,7 @@ nuget Giraffe 6.0.0-alpha-2
 
 git ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git master Packages: /nuget/
 # LMC Nuget dependencies:
-nuget Lmc.JsonApi ~> 3.0
+nuget Lmc.JsonApi ~> 3.2
 
 nuget Expecto
 nuget YoloDev.Expecto.TestSdk
