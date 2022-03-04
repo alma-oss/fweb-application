@@ -28,7 +28,7 @@ NUGET
       FSharp.Core (>= 4.6)
       Mono.Cecil (>= 0.11.3)
     FSharp.Core (6.0.3)
-    FSharp.Data (4.2.7)
+    FSharp.Data (4.2.8)
       FSharp.Core (>= 4.7.2)
     Giraffe (6.0.0-alpha-2)
       FSharp.Core (>= 6.0.1)
@@ -682,16 +682,16 @@ NUGET
       FSharp.Core (>= 4.6)
       System.Collections.Immutable (>= 1.5)
   remote: paket-files/git_bitbucket.lmc.cz7999/archi/nuget-server/nuget
-    Lmc.ErrorHandling (6.0.0)
-      FSharp.Core (>= 6.0.1)
-    Lmc.JsonApi (3.2.0)
+    Lmc.ErrorHandling (6.1.0)
+      FSharp.Core (>= 6.0.3)
+    Lmc.JsonApi (3.3.0)
       FSharp.Core (>= 6.0.3)
       FSharp.Data (>= 4.2.7)
       Giraffe (>= 6.0.0-alpha-2)
       Lmc.ErrorHandling (>= 6.0)
       Lmc.Serializer (>= 3.0)
       Lmc.State (>= 5.0)
-      Lmc.Tracing (>= 4.0)
+      Lmc.Tracing (>= 5.0)
     Lmc.Logging (6.0.0)
       FSharp.Core (>= 6.0.1)
       FSharp.Data (>= 4.2.7)
@@ -710,7 +710,7 @@ NUGET
     Lmc.State (5.0.0)
       FSharp.Core (>= 6.0.1)
       Lmc.ErrorHandling (>= 6.0)
-    Lmc.Tracing (4.0.0)
+    Lmc.Tracing (5.0.0)
       FSharp.Core (>= 6.0.3)
       FSharp.Data (>= 4.2.7)
       Jaeger (>= 1.0.3)
@@ -721,7 +721,7 @@ NUGET
       Microsoft.Extensions.Logging (>= 6.0)
 GIT
   remote: ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git
-     (901aaedb55a82cd46d0c94253a7ab3c59c7184ed)
+     (517444941332fbe9963f10757a27987d669eb76c)
       path: /nuget/
 GROUP Build
 STORAGE: NONE
