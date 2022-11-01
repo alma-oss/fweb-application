@@ -14,6 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="src/JsonRPC/JsonRPC.fs" />
+
     <Compile Include="src/Common.fs" />
     <Compile Include="src/WebApplication.fs" />
   </ItemGroup>
