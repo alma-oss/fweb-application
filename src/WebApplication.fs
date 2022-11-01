@@ -72,12 +72,13 @@ module Handler =
 
     let healthCheck accessDenied: HttpHandler =
         route "/health-check"
-            >=> requiresInternalRequest accessDenied
             >=> HEAD
+            >=> requiresInternalRequest accessDenied
             >=> text ""
 
     let appRootStatus status: HttpHandler =
         route "/appRoot/status"
+            >=> GET
             >=> requiresInternalRequest accessDeniedXml
             >=> warbler (status >> xml)
 
@@ -88,5 +89,6 @@ module Handler =
 
     let metrics metrics: HttpHandler =
         route "/metrics"
+            >=> GET
             >=> requiresInternalRequest accessDeniedJson
             >=> warbler (metrics >> text)
