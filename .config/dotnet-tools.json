@@ -3,7 +3,7 @@
     "isRoot": true,
     "tools": {
         "fake-cli": {
-            "version": "5.22.0",
+            "version": "5.23.1",
             "commands": [
                 "fake"
             ]
@@ -15,7 +15,7 @@
             ]
         },
         "dotnet-fsharplint": {
-            "version": "0.21.0",
+            "version": "0.21.2",
             "commands": [
                 "dotnet-fsharplint"
             ]

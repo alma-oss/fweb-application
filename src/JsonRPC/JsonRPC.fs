@@ -317,7 +317,6 @@ module Handler =
                 let! body =
                     reader.ReadToEndAsync()
                     |> AsyncResult.ofTaskCatch JsonRpcErrorDto.invalidRequest
-                printfn "Request:\n%A" body
 
                 let! request = body |> Request.parse
 
