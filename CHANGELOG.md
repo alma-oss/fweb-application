@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Update dependencies
+- Remove forgotten print
 
 ## 4.2.0 - 2022-11-01
 - Add JsonRpc
