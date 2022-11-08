@@ -11,6 +11,11 @@ module internal Utils =
     module String =
         let trim (string: string) = string.Trim(' ')
 
+    [<RequireQualifiedAccess>]
+    module HttpContext =
+        let requestPath (ctx: HttpContext) =
+            if ctx.Request.Path.HasValue then ctx.Request.Path.Value else ""
+
 [<RequireQualifiedAccess>]
 module Header =
     let (|RequestHeader|_|) header (httpContext: HttpContext) =
