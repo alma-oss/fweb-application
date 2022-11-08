@@ -13,6 +13,7 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
 open Lmc.ErrorHandling
+open Lmc.WebApplication
 
 open FSharp.Data
 open Giraffe
@@ -58,6 +59,15 @@ module JsonRpcErrorDto =
         Code = 404
         Message = "Not found"
         Data = request
+    }
+
+    let methodNotAllowed allowed method = {
+        Code = 405
+        Message = "Method not allowed"
+        Data = {|
+            Method = method
+            Allowed = allowed
+        |}
     }
 
     let private jsonRpcError (code, message) request = {
@@ -305,9 +315,23 @@ type JsonRpcEndpoint = {
 [<RequireQualifiedAccess>]
 module Handler =
     let notFound: HttpHandler =
-        routef "/%s"
-            (JsonRpcErrorDto.notFound >> JsonRpcErrorResponseDto.ofError >> json)
-            >=> setStatusCode 404
+        RequestErrors.notFound (fun next ctx -> task {
+            let error =
+                ctx
+                |> HttpContext.requestPath
+                |> JsonRpcErrorDto.notFound
+                |> JsonRpcErrorResponseDto.ofError
+            return! json error next ctx
+        })
+
+    let methodNotAllowed allowed: HttpHandler =
+        RequestErrors.methodNotAllowed (fun next ctx -> task {
+            let error =
+                ctx.Request.Method
+                |> JsonRpcErrorDto.methodNotAllowed allowed
+                |> JsonRpcErrorResponseDto.ofError
+            return! json error next ctx
+        })
 
     let private handle endpoint: HttpHandler = fun next ctx -> task {
         let! response =
@@ -350,12 +374,18 @@ module Handler =
 
     let jsonRpc endpoint =
         let jsonRpcRoute =
+            let route = routex "/jsonrpc(/?)"
+
             match endpoint with
-            | { Authorization = Some authorization } -> route "/jsonrpc/" >=> authorization
-            | _ -> route "/jsonrpc/"
+            | { Authorization = Some authorization } -> route >=> authorization
+            | _ -> route
 
         jsonRpcRoute
             >=> choose [
+                GET >=> methodNotAllowed "POST"
+                HEAD >=> methodNotAllowed "POST"
+                PUT >=> methodNotAllowed "POST"
+
                 POST >=> handle endpoint
 
                 notFound

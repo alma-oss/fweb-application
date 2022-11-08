@@ -2,6 +2,13 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `JsonRpc.methodNotAllowed` error and handler
+- Update not found handlers to handle all not found requests
+    - `JsonRpc.notFound`
+    - `HttpHandler.notFound`
+- Allow `JsonRpc.jsonRpc` handler with both trailing `/` and without it
+- Show method not allowed if `/jsonrpc` endpoint is used with wrong method
+- Add `HttpHandler.notFoundJson`
 
 ## 4.3.0 - 2022-11-03
 - Update dependencies

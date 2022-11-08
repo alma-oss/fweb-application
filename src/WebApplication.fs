@@ -82,10 +82,24 @@ module Handler =
             >=> requiresInternalRequest accessDeniedXml
             >=> warbler (status >> xml)
 
+    let notFoundJson: HttpHandler =
+        RequestErrors.notFound (fun next ctx -> task {
+            return! json {|
+                Code = 404
+                Error = "Not Found"
+                Request = ctx |> HttpContext.requestPath
+            |} next ctx
+        })
+
     let resourceNotFound: HttpHandler =
-        routef "/%s"
-            (JsonApiErrorDto.notFound >> JsonApiErrorResponseData.ofError >> json)
-            >=> setStatusCode 404
+        RequestErrors.notFound (fun next ctx -> task {
+            let error =
+                ctx
+                |> HttpContext.requestPath
+                |> JsonApiErrorDto.notFound
+                |> JsonApiErrorResponseData.ofError
+            return! json error next ctx
+        })
 
     let metrics metrics: HttpHandler =
         route "/metrics"
