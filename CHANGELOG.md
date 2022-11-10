@@ -2,6 +2,9 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Allow to parse `JsonRpc.Response` without an id (as explicit error)
+- Add `RequestParameters` type
+- [**BC**] Change `JsonRpc.Request.Parameters` to `RequestParameters`
 
 ## 4.4.0 - 2022-11-08
 - Add `JsonRpc.methodNotAllowed` error and handler

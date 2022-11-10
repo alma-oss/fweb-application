@@ -106,8 +106,12 @@ type Request = {
 
     /// A Structured value that holds the parameter values to be used during the invocation of the method.
     /// This member MAY be omitted.
-    Parameters: RawJsonData
+    Parameters: RequestParameters
 }
+
+and RequestParameters =
+    | RawJson of RawJsonData
+    | Dto of obj
 
 /// https://www.jsonrpc.org/specification#request_object
 type RequestDto = {
@@ -135,7 +139,10 @@ module Request =
             Jsonrpc = JsonRpc.Version
             Id = request.Id
             Method = request.Method |> Method.value
-            Params = request.Parameters |> RawJsonData.parameters
+            Params =
+                match request.Parameters with
+                | RawJson data -> data |> RawJsonData.parameters
+                | Dto dto -> dto
         }
 
     type private RequestSchema = JsonProvider<"src/JsonRPC/schema/request.json", SampleIsList=true>
@@ -150,7 +157,7 @@ module Request =
                 Ok {
                     Id = parsed.Id
                     Method = Method parsed.Method
-                    Parameters = RawJsonData parsed.Params.JsonValue
+                    Parameters = RawJson (RawJsonData parsed.Params.JsonValue)
                 }
 
         with e ->
@@ -178,16 +185,20 @@ module Response =
         try
             let parsed = response |> ResponseSchema.Parse
 
-            match parsed.Error with
-            | Some error ->
+            match parsed.Id, parsed.Error with
+            | None, None ->
+                Error (ResponseError.JsonRpcError (JsonRpcErrorDto.parseError "Missing Id given."))
+
+            | _, Some error ->
                 Error (ResponseError.JsonRpcError {
                     Code = error.Code
                     Message = error.Message
                     Data = error.Data
                 })
-            | _ ->
+
+            | Some id, _ ->
                 Ok {
-                    Id = parsed.Id
+                    Id = id
                     Result =
                         match parsed.Result with
                         | Some result -> RawJsonData result.JsonValue
@@ -218,6 +229,7 @@ type JsonRpcCallError<'PostError> =
 [<RequireQualifiedAccess>]
 module JsonRpcCall =
     /// Send jsonrpc request by your own `postJson` function, it MUST be a `HTTP` request with `application/json` Accept and ContentType.
+    /// Request SHOULD return 200, even for error (errors are handled by its response - not by http status code).
     /// RequestDto MUST be serialized to json.
     let send postJson request: AsyncResult<_, JsonRpcCallError<_>> = asyncResult {
         let! (rawResponse: string) =
@@ -349,8 +361,13 @@ module Handler =
                     |> Map.tryFind request.Method
                     |> Result.ofOption (JsonRpcErrorDto.methodNotFound request.Method)
 
+                let! parameters =
+                    match request.Parameters with
+                    | RawJson rawJson -> Ok rawJson
+                    | _ -> Error <| JsonRpcErrorDto.internalError {| Request = request; Detail = "Handle request can parse RequestParameters.RawJson only." |}
+
                 let! arguments =
-                    request.Parameters
+                    parameters
                     |> action.ParseParameters
                     |> Result.mapError JsonRpcErrorDto.invalidParams
 
