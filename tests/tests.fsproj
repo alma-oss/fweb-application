@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Compile Include="LmcEnvironmentTest.fs" />
+    <Compile Include="JsonRpcTest.fs" />
     <Compile Include="Tests.fs" />
   </ItemGroup>
 
