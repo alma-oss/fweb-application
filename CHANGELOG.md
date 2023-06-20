@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 6.1.0 - 2023-20-06
 - Add `Jsonrpc` version to response
 
 ## 6.0.1 - 2023-20-06
