@@ -21,5 +21,31 @@
             "arg1": "string",
             "arg2": 42
         }
+    },
+    {
+        "jsonrpc": "2.0",
+        "method": "method",
+        "params": {
+            "arg1": "string",
+            "arg2": 42
+        }
+    },
+    {
+        "jsonrpc": "2.0",
+        "method": "method",
+        "id": null,
+        "params": {
+            "arg1": "string",
+            "arg2": 42
+        }
+    },
+    {
+        "jsonrpc": "2.0",
+        "id": "foo",
+        "method": "method",
+        "params": {
+            "arg1": "string",
+            "arg2": 42
+        }
     }
 ]

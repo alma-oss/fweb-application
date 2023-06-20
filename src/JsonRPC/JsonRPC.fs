@@ -92,12 +92,34 @@ module JsonRpcErrorResponseDto =
 // Request
 //
 
+[<RequireQualifiedAccess>]
+type RequestId =
+    | Number of int
+    | String of string
+    | Null
+
+type RequestIdDto = obj
+
+[<RequireQualifiedAccess>]
+module private RequestId =
+    let parse = function
+        | None, None
+        | None, Some null
+            -> RequestId.Null
+        | Some number, _ -> RequestId.Number number
+        | _, Some string -> RequestId.String string
+
+    let serialize: RequestId -> RequestIdDto = function
+        | RequestId.Number number -> number :> obj
+        | RequestId.String string -> string :> obj
+        | RequestId.Null -> null
+
 /// https://www.jsonrpc.org/specification#request_object
 type Request = {
     /// An identifier established by the Client that MUST contain a String, Number, or NULL value if included.
     /// If it is not included it is assumed to be a notification.
     /// The value SHOULD normally not be Null [1] and Numbers SHOULD NOT contain fractional parts
-    Id: int
+    Id: RequestId
 
     /// A String containing the name of the method to be invoked.
     /// Method names that begin with the word rpc followed by a period character (U+002E or ASCII 46)
@@ -121,7 +143,7 @@ type RequestDto = {
     /// An identifier established by the Client that MUST contain a String, Number, or NULL value if included.
     /// If it is not included it is assumed to be a notification.
     /// The value SHOULD normally not be Null [1] and Numbers SHOULD NOT contain fractional parts
-    Id: int
+    Id: obj
 
     /// A String containing the name of the method to be invoked.
     /// Method names that begin with the word rpc followed by a period character (U+002E or ASCII 46)
@@ -137,7 +159,7 @@ type RequestDto = {
 module Request =
     let toDto: Request -> RequestDto = fun request -> {
             Jsonrpc = JsonRpc.Version
-            Id = request.Id
+            Id = request.Id |> RequestId.serialize
             Method = request.Method |> Method.value
             Params =
                 match request.Parameters with
@@ -155,7 +177,7 @@ module Request =
                 Error (JsonRpcErrorDto.invalidRequest request)
             else
                 Ok {
-                    Id = parsed.Id
+                    Id = (parsed.Id.Number, parsed.Id.String) |> RequestId.parse
                     Method = Method parsed.Method
                     Parameters = RawJson (RawJsonData parsed.Params.JsonValue)
                 }
@@ -168,7 +190,7 @@ module Request =
 //
 
 type Response = {
-    Id: int
+    Id: RequestIdDto
     Result: obj
 }
 
@@ -185,20 +207,17 @@ module Response =
         try
             let parsed = response |> ResponseSchema.Parse
 
-            match parsed.Id, parsed.Error with
-            | None, None ->
-                Error (ResponseError.JsonRpcError (JsonRpcErrorDto.parseError "Missing Id given."))
-
-            | _, Some error ->
+            match parsed.Error with
+            | Some error ->
                 Error (ResponseError.JsonRpcError {
                     Code = error.Code
                     Message = error.Message
                     Data = error.Data
                 })
 
-            | Some id, _ ->
+            | _ ->
                 Ok {
-                    Id = id
+                    Id = (parsed.Id.Number, parsed.Id.String) |> RequestId.parse |> RequestId.serialize
                     Result =
                         match parsed.Result with
                         | Some result -> RawJsonData result.JsonValue
@@ -243,7 +262,7 @@ module JsonRpcCall =
             |> Response.parse
             |> Result.mapError JsonRpcCallError.ResponseError
 
-        if request.Id <> response.Id then
+        if request.Id |> RequestId.serialize <> response.Id then
             return!
                 "Request.id is different than Response.id"
                 |> JsonRpcErrorDto.internalError
