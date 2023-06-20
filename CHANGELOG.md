@@ -2,8 +2,11 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 6.0.0 - 2023-20-06
 - Add `Handler.jsonRpcWithHttpContext` function
 - Fix `RequestId` according to `JsonRpc specification`
+- Update dependencies
 
 ## 5.0.0 - 2022-11-10
 - Allow to parse `JsonRpc.Response` without an id (as explicit error)
