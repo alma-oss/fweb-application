@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Fix `Handler.jsonRpc*` to serialize `RequestId` in response
 
 ## 6.0.0 - 2023-20-06
 - Add `Handler.jsonRpcWithHttpContext` function

@@ -396,7 +396,7 @@ module Handler =
                     |> AsyncResult.mapError JsonRpcErrorDto.internalError
 
                 return {
-                    Id = request.Id
+                    Id = request.Id |> RequestId.serialize
                     Result = data
                 }
             }
