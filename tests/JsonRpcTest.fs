@@ -16,7 +16,7 @@ let okOrFail = function
     | Ok x -> x
     | Error e -> failwithf "%A" e
 
-type TestCase = {
+type RequestTestCase = {
     Name: string
     Request: string
     ExpectedRequest: Request
@@ -62,6 +62,39 @@ let provideRequests =
         }
     ]
 
+type ResponseTestCase = {
+    Name: string
+    Response: string
+    ExpectedResponse: Result<Response, ResponseError>
+}
+
+let provideResponses =
+    [
+        {
+            Name = "Simple response"
+            Response = """{"jsonrpc": "2.0", "result": 19, "id": 1}"""
+            ExpectedResponse = Ok {
+                Jsonrpc = "2.0"
+                Id = RequestId.Number 1 |> RequestId.serialize
+                Result = RawJsonData (JsonValue.Number (decimal 19))
+            }
+        }
+        {
+            Name = "Custom version"
+            Response = """{"jsonrpc": "3.0", "result": 19, "id": 1}"""
+            ExpectedResponse = Error (ResponseError.InvalidJsonRpcVersion "3.0")
+        }
+        {
+            Name = "Response without version"
+            Response = """{"result": 19, "id": 1}"""
+            ExpectedResponse = Ok {
+                Jsonrpc = "2.0"
+                Id = RequestId.Number 1 |> RequestId.serialize
+                Result = RawJsonData (JsonValue.Number (decimal 19))
+            }
+        }
+    ]
+
 [<Tests>]
 let jsonRpcTest =
     testList "JsonRpc - Parse" [
@@ -73,5 +106,14 @@ let jsonRpcTest =
                     |> okOrFail
 
                 Expect.equal request tc.ExpectedRequest ""
+        )
+
+        yield! provideResponses |> List.map (fun tc ->
+            testCase tc.Name <| fun _ ->
+                let response =
+                    tc.Response
+                    |> Response.parse
+
+                Expect.equal response tc.ExpectedResponse ""
         )
     ]

@@ -101,7 +101,7 @@ type RequestId =
 type RequestIdDto = obj
 
 [<RequireQualifiedAccess>]
-module private RequestId =
+module internal RequestId =
     let parse = function
         | None, None
         | None, Some null
@@ -190,6 +190,7 @@ module Request =
 //
 
 type Response = {
+    Jsonrpc: string
     Id: RequestIdDto
     Result: obj
 }
@@ -197,6 +198,7 @@ type Response = {
 [<RequireQualifiedAccess>]
 type ResponseError =
     | Exception of exn
+    | InvalidJsonRpcVersion of string
     | JsonRpcError of JsonRpcErrorDto
 
 [<RequireQualifiedAccess>]
@@ -207,22 +209,26 @@ module Response =
         try
             let parsed = response |> ResponseSchema.Parse
 
-            match parsed.Error with
-            | Some error ->
-                Error (ResponseError.JsonRpcError {
-                    Code = error.Code
-                    Message = error.Message
-                    Data = error.Data
-                })
+            if parsed.Jsonrpc.IsSome && parsed.Jsonrpc.Value <> JsonRpc.Version then
+                Error (ResponseError.InvalidJsonRpcVersion parsed.Jsonrpc.Value)
+            else
+                match parsed.Error with
+                | Some error ->
+                    Error (ResponseError.JsonRpcError {
+                        Code = error.Code
+                        Message = error.Message
+                        Data = error.Data
+                    })
 
-            | _ ->
-                Ok {
-                    Id = (parsed.Id.Number, parsed.Id.String) |> RequestId.parse |> RequestId.serialize
-                    Result =
-                        match parsed.Result with
-                        | Some result -> RawJsonData result.JsonValue
-                        | _ -> RawJsonData JsonValue.Null
-                }
+                | _ ->
+                    Ok {
+                        Jsonrpc = JsonRpc.Version
+                        Id = (parsed.Id.Number, parsed.Id.String) |> RequestId.parse |> RequestId.serialize
+                        Result =
+                            match parsed.Result with
+                            | Some result -> RawJsonData result.JsonValue
+                            | _ -> RawJsonData JsonValue.Null
+                    }
 
         with e ->
             Error (ResponseError.Exception e)
@@ -396,6 +402,7 @@ module Handler =
                     |> AsyncResult.mapError JsonRpcErrorDto.internalError
 
                 return {
+                    Jsonrpc = JsonRpc.Version
                     Id = request.Id |> RequestId.serialize
                     Result = data
                 }
