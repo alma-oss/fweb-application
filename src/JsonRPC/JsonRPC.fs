@@ -389,7 +389,7 @@ module Handler =
             | Error error -> json error next ctx
     }
 
-    let jsonRpc endpoint =
+    let jsonRpc endpoint: HttpHandler =
         let jsonRpcRoute =
             let route = routex "/jsonrpc(/?)"
 
@@ -407,3 +407,6 @@ module Handler =
 
                 notFound
             ]
+
+    let jsonRpcWithHttpContext endpoint: HttpHandler =
+        fun next ctx -> jsonRpc (endpoint ctx) next ctx

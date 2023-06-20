@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `Handler.jsonRpcWithHttpContext` function
 
 ## 5.0.0 - 2022-11-10
 - Allow to parse `JsonRpc.Response` without an id (as explicit error)
