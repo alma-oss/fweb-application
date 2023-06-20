@@ -9,7 +9,7 @@
             }
         },
         "id": 7,
-        "jsonrpc": "2.0"
+        "jsonrpc": "2.0 as string"
     },
     {
         "result": {
@@ -21,7 +21,7 @@
             }
         },
         "id": 7,
-        "jsonrpc": "2.0"
+        "jsonrpc": "2.0 as string"
     },
     {
         "error": {
@@ -30,7 +30,7 @@
             "data": "method"
         },
         "id": 32,
-        "jsonrpc": "2.0"
+        "jsonrpc": "2.0 as string"
     },
     {
         "error": {
@@ -39,7 +39,7 @@
             "data": "method"
         },
         "id": "foo",
-        "jsonrpc": "2.0"
+        "jsonrpc": "2.0 as string"
     },
     {
         "error": {
@@ -48,7 +48,7 @@
             "data": "method"
         },
         "id": null,
-        "jsonrpc": "2.0"
+        "jsonrpc": "2.0 as string"
     },
     {
         "error": {

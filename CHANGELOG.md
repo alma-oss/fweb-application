@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `Jsonrpc` version to response
 
 ## 6.0.1 - 2023-20-06
 - Fix `Handler.jsonRpc*` to serialize `RequestId` in response
