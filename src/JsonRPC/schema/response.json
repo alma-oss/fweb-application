@@ -37,6 +37,24 @@
             "code": -32601,
             "message": "Method not found",
             "data": "method"
+        },
+        "id": "foo",
+        "jsonrpc": "2.0"
+    },
+    {
+        "error": {
+            "code": -32601,
+            "message": "Method not found",
+            "data": "method"
+        },
+        "id": null,
+        "jsonrpc": "2.0"
+    },
+    {
+        "error": {
+            "code": -32601,
+            "message": "Method not found",
+            "data": "method"
         }
     }
 ]
