@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `Metrics.createDataSetKey` function
 
 ## 7.1.0 - 2023-06-27
 - Add `Handler.handleRequestDuration` function

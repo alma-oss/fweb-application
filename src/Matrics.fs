@@ -10,7 +10,6 @@ module Metrics =
     open System.Diagnostics
     open System.Threading
     open Microsoft.AspNetCore.Http
-    open Giraffe
 
     open Lmc.Tracing
     open Lmc.State.ConcurrentStorage
@@ -56,13 +55,13 @@ module Metrics =
                     yield "svc_bucket", spot.Bucket |> Bucket.value
                 | _ -> ()
 
-                yield! labels
+                yield! labels |> SimpleDataSetKeys.value
             ]
             |> DataSetKey.createFromInstance instance
             |> Result.orFail
 
         let createKeyForStatus instance =
-            createKey instance None []
+            createKey instance None (SimpleDataSetKeys [])
 
         let private createKeyForTotalRequestDuration instance request =
             SimpleDataSetKeys (
@@ -71,7 +70,6 @@ module Metrics =
                 ]
                 @ request.CustomLabels
             )
-            |> SimpleDataSetKeys.value
             |> createKey instance None
 
         let metricRequestDurationOk = MetricName.createOrFail "total_request_duration_ok"
@@ -91,6 +89,8 @@ module Metrics =
             |> createKeyForTotalRequestDuration instance
             |> State.incrementMetricSetValue (Int 1) metric
             |> ignore
+
+    let createDataSetKey = InternalState.createKey
 
     let enableContextStatus (instance: Instance) =
         let metricName = metricStatus instance.Context
