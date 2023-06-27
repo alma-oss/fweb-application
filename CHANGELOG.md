@@ -2,6 +2,11 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `Metrics` module
+- Add `Http` module
+- [**BC**] Change jsonrpc handlers to require current application instance
+    - `JsonRpc.Handler.jsonRpc`
+    - `JsonRpc.Handler.jsonRpcWithHttpContext`
 
 ## 6.1.0 - 2023-20-06
 - Add `Jsonrpc` version to response

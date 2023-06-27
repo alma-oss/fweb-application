@@ -14,6 +14,7 @@ open Microsoft.Extensions.Logging
 
 open Lmc.ErrorHandling
 open Lmc.WebApplication
+open Lmc.ServiceIdentification
 
 open FSharp.Data
 open Giraffe
@@ -370,9 +371,10 @@ module Handler =
             return! json error next ctx
         })
 
-    let private handle endpoint: HttpHandler = fun next ctx -> task {
+    let private handle (instance: Instance) endpoint: HttpHandler = fun next ctx -> task {
         let! response =
             asyncResult {
+                Metrics.startRequest ctx
                 use reader = new StreamReader(ctx.Request.Body)
 
                 let! body =
@@ -401,12 +403,25 @@ module Handler =
                     |> action.Run
                     |> AsyncResult.mapError JsonRpcErrorDto.internalError
 
-                return {
+                return request.Method, {
                     Jsonrpc = JsonRpc.Version
                     Id = request.Id |> RequestId.serialize
                     Result = data
                 }
             }
+            |> AsyncResult.tee (fun (method, _) ->
+                ctx
+                |> Metrics.finishRequest (fun request ->
+                    { request with
+                        CustomLabels = [
+                            "jsonrpc_method", method |> Method.value
+                        ]
+                    }
+                    |> Metrics.incrementRequestDuration instance
+                )
+            )
+            |> AsyncResult.teeError (fun _ -> ctx |> Metrics.finishRequest (Metrics.incrementRequestDuration instance))
+            |> AsyncResult.map snd
             |> AsyncResult.mapError JsonRpcErrorResponseDto.ofError
 
         return!
@@ -415,7 +430,7 @@ module Handler =
             | Error error -> json error next ctx
     }
 
-    let jsonRpc endpoint: HttpHandler =
+    let jsonRpc instance endpoint: HttpHandler =
         let jsonRpcRoute =
             let route = routex "/jsonrpc(/?)"
 
@@ -429,10 +444,10 @@ module Handler =
                 HEAD >=> methodNotAllowed "POST"
                 PUT >=> methodNotAllowed "POST"
 
-                POST >=> handle endpoint
+                POST >=> handle instance endpoint
 
                 notFound
             ]
 
-    let jsonRpcWithHttpContext endpoint: HttpHandler =
-        fun next ctx -> jsonRpc (endpoint ctx) next ctx
+    let jsonRpcWithHttpContext instance endpoint: HttpHandler =
+        fun next ctx -> jsonRpc instance (endpoint ctx) next ctx
