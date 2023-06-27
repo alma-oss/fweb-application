@@ -157,6 +157,10 @@ NUGET
       Serilog (>= 2.10)
       Serilog.Extensions.Logging (>= 3.1)
       Serilog.Sinks.Console (>= 4.0.1)
+    Lmc.Metrics (6.1.0)
+      FSharp.Core (>= 6.0.1)
+      Lmc.ErrorHandling (>= 6.0)
+      Lmc.ServiceIdentification (>= 6.0)
     Lmc.Serializer (3.3.0)
       FSharp.Core (>= 6.0.4 < 7.0)
       FSharp.Data (>= 4.2.10 < 5.0)
@@ -181,7 +185,7 @@ NUGET
       OpenTelemetry.Instrumentation.Http (>= 1.0.0-rc9.2)
 GIT
   remote: ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git
-     (db2eddae80345d982cc0be2c0fed661ff58efd8c)
+     (5528f7dea0e4be82badfbb12b54801bfa6fbf07b)
       path: /nuget/
 GROUP Build
 STORAGE: NONE
