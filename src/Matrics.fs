@@ -67,6 +67,10 @@ module Metrics =
             SimpleDataSetKeys (
                 [
                     "request", request.Request
+
+                    match request.StatusCode with
+                    | Some statusCode -> "http_status_code", string statusCode
+                    | _ -> ()
                 ]
                 @ request.CustomLabels
             )
