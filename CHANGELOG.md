@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `http_status_code` label to `total_request_duration_*` metrics
 
 ## 7.2.0 - 2023-06-27
 - Add `Metrics.createDataSetKey` function
