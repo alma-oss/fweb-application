@@ -106,3 +106,15 @@ module Handler =
             >=> GET
             >=> requiresInternalRequest accessDeniedJson
             >=> warbler (metrics >> text)
+
+    let handleRequestDuration instance: HttpHandler =
+        fun next ctx -> task {
+            Metrics.startRequest ctx
+            let! response = next ctx
+
+            response
+            |> Option.defaultValue ctx
+            |> Metrics.finishRequest (Metrics.incrementRequestDuration instance)
+
+            return response
+        }

@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `Handler.handleRequestDuration` function
 
 ## 7.0.0 - 2023-06-27
 - Add `Metrics` module
