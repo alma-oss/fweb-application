@@ -371,6 +371,12 @@ module Handler =
             return! json error next ctx
         })
 
+    let private resultErrorWithMethod (method: Method option) =
+        Result.mapError (fun e -> (method, e))
+
+    let private asyncResultErrorWithMethod (method: Method option) =
+        AsyncResult.mapError (fun e -> (method, e))
+
     let private handle (instance: Instance) endpoint: HttpHandler = fun next ctx -> task {
         let! response =
             asyncResult {
@@ -380,30 +386,42 @@ module Handler =
                 let! body =
                     reader.ReadToEndAsync()
                     |> AsyncResult.ofTaskCatch JsonRpcErrorDto.invalidRequest
+                    |> asyncResultErrorWithMethod None
 
-                let! request = body |> Request.parse
+                let! request =
+                    body
+                    |> Request.parse
+                    |> resultErrorWithMethod None
+                let method = request.Method
 
                 let! action =
                     endpoint.HandleMethod
-                    |> Map.tryFind request.Method
-                    |> Result.ofOption (JsonRpcErrorDto.methodNotFound request.Method)
+                    |> Map.tryFind method
+                    |> Result.ofOption (JsonRpcErrorDto.methodNotFound method)
+                    |> resultErrorWithMethod (Some method)
 
                 let! parameters =
                     match request.Parameters with
                     | RawJson rawJson -> Ok rawJson
-                    | _ -> Error <| JsonRpcErrorDto.internalError {| Request = request; Detail = "Handle request can parse RequestParameters.RawJson only." |}
+                    | _ ->
+                        Error (
+                            Some method,
+                            JsonRpcErrorDto.internalError {| Request = request; Detail = "Handle request can parse RequestParameters.RawJson only." |}
+                        )
 
                 let! arguments =
                     parameters
                     |> action.ParseParameters
                     |> Result.mapError JsonRpcErrorDto.invalidParams
+                    |> resultErrorWithMethod (Some method)
 
                 let! (ActionResult data) =
                     arguments
                     |> action.Run
                     |> AsyncResult.mapError JsonRpcErrorDto.internalError
+                    |> asyncResultErrorWithMethod (Some method)
 
-                return request.Method, {
+                return method, {
                     Jsonrpc = JsonRpc.Version
                     Id = request.Id |> RequestId.serialize
                     Result = data
@@ -413,6 +431,7 @@ module Handler =
                 ctx
                 |> Metrics.finishRequest (fun request ->
                     { request with
+                        StatusCode = Some 200
                         CustomLabels = [
                             "jsonrpc_method", method |> Method.value
                         ]
@@ -420,9 +439,22 @@ module Handler =
                     |> Metrics.incrementRequestDuration instance
                 )
             )
-            |> AsyncResult.teeError (fun _ -> ctx |> Metrics.finishRequest (Metrics.incrementRequestDuration instance))
+            |> AsyncResult.teeError (fun (method, _) ->
+                ctx
+                |> Metrics.finishRequest (fun request ->
+                    { request with
+                        StatusCode = Some 400
+                        CustomLabels = [
+                            match method with
+                            | Some method -> "jsonrpc_method", method |> Method.value
+                            | _ -> ()
+                        ]
+                    }
+                    |> Metrics.incrementRequestDuration instance
+                )
+            )
             |> AsyncResult.map snd
-            |> AsyncResult.mapError JsonRpcErrorResponseDto.ofError
+            |> AsyncResult.mapError (snd >> JsonRpcErrorResponseDto.ofError)
 
         return!
             match response with
