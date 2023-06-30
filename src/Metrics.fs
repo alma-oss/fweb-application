@@ -39,7 +39,7 @@ module Metrics =
                 Request =
                     sprintf "/%s%s"
                         (if ctx.Request.Path.HasValue then ctx.Request.Path.Value.TrimStart '/' else "")
-                        (ctx.Request.Query |> Http.anonimizeQueryParameters)
+                        (ctx.Request.Query |> Http.Http.anonimizeQueryParameters)
                 DurationMilliseconds = stopwatch.ElapsedMilliseconds
                 CustomLabels = []
                 StatusCode = try Some ctx.Response.StatusCode with _ -> None

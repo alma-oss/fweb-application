@@ -74,19 +74,3 @@ module IPAddress =
         | [| 169; 254; _; _ |] -> true
 
         | _ -> false
-
-[<RequireQualifiedAccess>]
-module Http =
-    let anonimizeQueryParameters (query: IQueryCollection) =
-        let anonymize = Set [ "email"; "phone"; "id" ]
-
-        if query.Count <= 0 then ""
-        else
-            query
-            |> Seq.map (function
-                | kvPair when kvPair.Key |> anonymize.Contains -> sprintf "%s=***" kvPair.Key
-                | kvPair when kvPair.Key.EndsWith "_id" -> sprintf "%s=***" kvPair.Key
-                | kvPair -> sprintf "%s=%s" kvPair.Key (kvPair.Value.ToString())
-            )
-            |> String.concat "&"
-            |> (+) "?"
