@@ -72,9 +72,11 @@ module Handler =
 
     let healthCheck accessDenied: HttpHandler =
         route "/health-check"
-            >=> HEAD
             >=> requiresInternalRequest accessDenied
-            >=> text ""
+            >=> choose [
+                HEAD >=> text ""
+                GET >=> text "OK"
+            ]
 
     let appRootStatus status: HttpHandler =
         route "/appRoot/status"

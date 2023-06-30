@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Allow `health-check` on `GET` and `HEAD`
+- Add `Http` module
 
 ## 7.4.0 - 2023-06-27
 - Add `http_status_code` and `jsonrpc_method` to `total_request_duration_*` in `jsonrpc` handlers
