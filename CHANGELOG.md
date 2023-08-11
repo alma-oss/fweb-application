@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- [**BC**] Use net 7.0
 
 ## 7.5.0 - 2023-06-30
 - Allow `health-check` on `GET` and `HEAD`
