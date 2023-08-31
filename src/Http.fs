@@ -132,6 +132,13 @@ module internal HttpStatusCode =
 module Http =
     open Lmc.Serializer
 
+    [<RequireQualifiedAccess>]
+    module QueryParameters =
+        let (|Has|_|) key (query: IQueryCollection) =
+            match query.TryGetValue key with
+            | true, values -> Some (values |> Seq.toList)
+            | _ -> None
+
     let anonimizeQueryParameters (query: IQueryCollection) =
         let anonymize = Set [ "email"; "phone"; "id" ]
 

@@ -17,6 +17,7 @@
     <Compile Include="src/Common.fs" />
     <Compile Include="src/Http.fs" />
     <Compile Include="src/Metrics.fs" />
+    <Compile Include="src/Spot.fs" />
     <Compile Include="src/JsonRPC/JsonRPC.fs" />
     <Compile Include="src/WebApplication.fs" />
   </ItemGroup>
