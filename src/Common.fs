@@ -1,4 +1,4 @@
-namespace Lmc.WebApplication
+namespace Alma.WebApplication
 
 open Microsoft.AspNetCore.Http
 open System.Net

@@ -1,6 +1,6 @@
-namespace Lmc.WebApplication
+namespace Alma.WebApplication
 
-open Lmc.ServiceIdentification
+open Alma.ServiceIdentification
 
 type SimpleDataSetKeys = SimpleDataSetKeys of (string * string) list
 
@@ -11,13 +11,13 @@ module Metrics =
     open System.Threading
     open Microsoft.AspNetCore.Http
 
-    open Lmc.Tracing
-    open Lmc.State.ConcurrentStorage
+    open Alma.Tracing
+    open Alma.State.ConcurrentStorage
 
-    open Lmc.ServiceIdentification
-    open Lmc.Metrics
-    open Lmc.Metrics.ServiceStatus
-    open Lmc.ErrorHandling
+    open Alma.ServiceIdentification
+    open Alma.Metrics
+    open Alma.Metrics.ServiceStatus
+    open Alma.ErrorHandling
 
     let metricStatus (Context context) = context |> sprintf "%s_status" |> MetricName.createOrFail
 

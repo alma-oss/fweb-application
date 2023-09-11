@@ -1,10 +1,10 @@
-namespace Lmc.WebApplication
+namespace Alma.WebApplication
 
 open System.Net
 open Microsoft.AspNetCore.Http
-open Lmc.ServiceIdentification
-open Lmc.ErrorHandling
-open Lmc.WebApplication.Http
+open Alma.ServiceIdentification
+open Alma.ErrorHandling
+open Alma.WebApplication.Http
 
 [<RequireQualifiedAccess>]
 module Spot =

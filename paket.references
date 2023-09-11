@@ -2,5 +2,5 @@ FSharp.Core
 FSharp.Data
 FsHttp
 Giraffe
-Lmc.JsonApi
-Lmc.Metrics
+Alma.JsonApi
+Alma.Metrics

@@ -4,9 +4,9 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <PackageId>Lmc.WebApplication</PackageId>
+    <PackageId>Alma.WebApplication</PackageId>
     <Version>8.1.0</Version>
-    <RepositoryUrl>https://bitbucket.lmc.cz/projects/ARCHI/repos/fweb-application/browse</RepositoryUrl>
+    <RepositoryUrl>https://github.com/almacareer/prc-fweb-application</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

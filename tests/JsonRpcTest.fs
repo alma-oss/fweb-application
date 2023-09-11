@@ -1,4 +1,4 @@
-module Lmc.WebApplication.JsonRpcTest
+module Alma.WebApplication.JsonRpcTest
 
 open Expecto
 open NSubstitute
@@ -8,9 +8,9 @@ open System.IO
 open System.Net
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Primitives
-open Lmc.ErrorHandling
-open Lmc.Serializer
-open Lmc.WebApplication.JsonRpc
+open Alma.ErrorHandling
+open Alma.Serializer
+open Alma.WebApplication.JsonRpc
 
 let okOrFail = function
     | Ok x -> x
