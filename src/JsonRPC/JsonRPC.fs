@@ -1,4 +1,4 @@
-namespace Lmc.WebApplication.JsonRpc
+namespace Alma.WebApplication.JsonRpc
 
 open System
 open System.IO
@@ -12,9 +12,9 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
-open Lmc.ErrorHandling
-open Lmc.WebApplication
-open Lmc.ServiceIdentification
+open Alma.ErrorHandling
+open Alma.WebApplication
+open Alma.ServiceIdentification
 
 open FSharp.Data
 open Giraffe
@@ -280,7 +280,7 @@ module JsonRpcCall =
         return response
     }
 
-    open Lmc.Serializer
+    open Alma.Serializer
 
     /// Post jsonrpc request by a default HTTP.post implementation, is is as simple as it could be.
     /// It serializes request to json and adds correct HTTP headers.

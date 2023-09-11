@@ -1,4 +1,4 @@
-namespace Lmc.WebApplication
+namespace Alma.WebApplication
 
 open System
 open System.Net
@@ -12,10 +12,10 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
 open Giraffe
-open Lmc.JsonApi
+open Alma.JsonApi
 
 [<RequireQualifiedAccess>]
-module LmcEnvironment =
+module AlmaEnvironment =
     let publicIP = IPAddress.Parse "185.120.71.181"
 
     let clientIP = function
@@ -68,7 +68,7 @@ module Handler =
         setStatusCode 403 >=> json { Title = "Forbidden"; Status = "403"; Detail = "Access denied." }
 
     let requiresInternalRequest accessDenied: HttpHandler =
-        authorizeRequest LmcEnvironment.isInternalRequest accessDenied
+        authorizeRequest AlmaEnvironment.isInternalRequest accessDenied
 
     let healthCheck accessDenied: HttpHandler =
         route "/health-check"

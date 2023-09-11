@@ -1,4 +1,4 @@
-namespace Lmc.WebApplication.Http
+namespace Alma.WebApplication.Http
 
 open System
 open System.Net
@@ -13,9 +13,9 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
 open Giraffe
-open Lmc.ErrorHandling
-open Lmc.Tracing
-open Lmc.Tracing.Extension
+open Alma.ErrorHandling
+open Alma.Tracing
+open Alma.Tracing.Extension
 
 type Url = Url of string
 
@@ -130,7 +130,7 @@ module internal HttpStatusCode =
 
 [<RequireQualifiedAccess>]
 module Http =
-    open Lmc.Serializer
+    open Alma.Serializer
 
     [<RequireQualifiedAccess>]
     module QueryParameters =
