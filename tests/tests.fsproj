@@ -15,8 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="AlmaEnvironmentTest.fs" />
+    <Compile Include="LmcEnvironmentTest.fs" />
     <Compile Include="JsonRpcTest.fs" />
+    <Compile Include="ServiceIdentificationTest.fs" />
     <Compile Include="Tests.fs" />
   </ItemGroup>
 

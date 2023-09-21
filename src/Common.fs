@@ -59,6 +59,16 @@ module ClientIpAddress =
         | null -> None
         | remoteIp -> Some (ClientIpAddress remoteIp)
 
+    let fromContext = function
+        // When request goes via loadbalancer, original client IP is stored in HTTP_X_FORWARDED_FOR
+        | HttpXForwardedFor xForwardedFor -> Some xForwardedFor
+
+        // Docker / vagrant requests goes directly, ie. HTTP_X_FORWARDED_FOR is not set and client IP is in REMOTE_ADDR
+        | RemoteIpAddress remoteIp -> Some remoteIp
+
+        // This is just a fallback, one of above methods should always return an IP
+        | _ -> None
+
 [<RequireQualifiedAccess>]
 module IPAddress =
     let isInternal (ip: IPAddress) =
