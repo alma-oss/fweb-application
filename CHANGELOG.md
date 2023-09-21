@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 10.0.0 - 2023-09-21
 - Add `Instance.k8sLocalServiceUrl` function
 - [**BC**] Rename `AlmaEnvironment` back to `LmcEnvironment`
 - Add `ClientIpAddress.fromContext` function
