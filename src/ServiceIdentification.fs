@@ -47,3 +47,12 @@ module Spot =
         match query |> tryParseZoneAndBucketFromQuery with
         | Some spot -> Some spot
         | _ -> None
+
+[<RequireQualifiedAccess>]
+module Instance =
+    let k8sLocalServiceUrl (instance: Instance) =
+        sprintf "http://%s-%s-%s.%s.svc.cluster.local"
+            (instance.Context |> Context.lower |> Context.value)
+            (instance.Purpose |> Purpose.lower |> Purpose.value)
+            (instance.Version |> Version.lower |> Version.value)
+            (instance.Domain |> Domain.lower |> Domain.value)
