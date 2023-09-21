@@ -47,7 +47,7 @@ let prepareHttpContext headers: HttpContext =
 
 /// see https://bitbucket.lmc.cz/projects/PRA/repos/lmcenvbundle/browse/tests/Environment/AbstractEnvironmentTestCase.php
 let provideRequests: TestCase list =
-    let lmcPublicIp = string AlmaEnvironment.publicIP
+    let lmcPublicIp = string LmcEnvironment.publicIP
     let publicIp = "8.8.8.8"
     let publicIpViaVarnish = $"{publicIp}, 10.4.48.24, 10.4.48.7"
 
@@ -151,7 +151,7 @@ let lmcEnvironmentTest =
     testList "WebApplication - AlmaEnvironment" [
         yield! provideRequests |> List.map (fun tc ->
             testCase tc.Name <| fun _ ->
-                let actual = AlmaEnvironment.isInternalRequest tc.HttpContext
+                let actual = LmcEnvironment.isInternalRequest tc.HttpContext
 
                 Expect.equal actual tc.ShouldBeInternal ""
         )

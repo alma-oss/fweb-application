@@ -3,6 +3,19 @@
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
 - Add `Instance.k8sLocalServiceUrl` function
+- [**BC**] Rename `AlmaEnvironment` back to `LmcEnvironment`
+- Add `ClientIpAddress.fromContext` function
+- [**BC**] Remove functions
+    - `AlmaEnvironment.clientIP`
+    - `Handler.appRootStatus`
+    - `Handler.healthCheck`
+    - `Handler.metrics`
+- [**BC**] Rename functions
+    - `Handler.requireInternalRequest` -> `Handler.requiresLmcInternalRequest`
+- Add modules
+    - `Handler.Authorized`
+    - `Handler.Lmc`
+    - `Handler.Public`
 
 ## 9.0.0 - 2023-09-11
 - [**BC**] Use `Alma` namespace
