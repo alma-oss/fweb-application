@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `Http.head` function
 
 ## 10.0.0 - 2023-09-21
 - Add `Instance.k8sLocalServiceUrl` function
