@@ -128,6 +128,12 @@ module internal HttpStatusCode =
 
     let isError = asInt >> fun code -> code >= 400
 
+type HeadResponse = {
+    Content: string
+    StatusCode: HttpStatusCode
+    Headers: (string * string) list
+}
+
 [<RequireQualifiedAccess>]
 module Http =
     open Alma.Serializer
@@ -166,7 +172,7 @@ module Http =
 
         error
 
-    let private handleResponseTracedSuccess (trace, response: HttpResponseMessage) =
+    let private handleResponseTracedSuccess f (trace, response: HttpResponseMessage) =
         use trace = trace |> Trace.addTags [ "http.status_code", response.StatusCode |> HttpStatusCode.asString ]
 
         response.Content
@@ -178,11 +184,12 @@ module Http =
 
             HttpError.ApiError e
         )
+        |> AsyncResult.map (f response)
 
-    let private handleResponse (result: AsyncResult<Trace * HttpResponseMessage, Trace * HttpError>): AsyncResult<string, HttpError> =
+    let private handleResponse f (result: AsyncResult<Trace * HttpResponseMessage, Trace * HttpError>): AsyncResult<_, HttpError> =
         result
         |> AsyncResult.mapError handleResponseTracedError
-        |> AsyncResult.bind handleResponseTracedSuccess
+        |> AsyncResult.bind (handleResponseTracedSuccess f)
 
     let private assertSuccessfulResponse (response: HttpResponseMessage): AsyncResult<unit, HttpError> = asyncResult {
         if response.StatusCode |> HttpStatusCode.isError then
@@ -193,6 +200,44 @@ module Http =
 
             return! AsyncResult.ofError (HttpError.ResponseError responseError)
     }
+
+    let head headers (Url url): AsyncResult<HeadResponse, HttpError> =
+        asyncResult {
+            let trace =
+                "[HTTP] Head response"
+                |> Trace.ChildOf.continueOrStart Trace.Active.current
+                |> Trace.addTags [
+                    "component", (sprintf "fWebApplication (%s)" AssemblyVersionInformation.AssemblyVersion)
+                    "http.method", "HEAD"
+                    "span.kind", "client"
+                ]
+
+            let trace = trace |> Trace.addTags [ "http.url", url ]
+
+            use client = new HttpClient()
+
+            headers
+            |> Http.inject trace
+            |> List.iter (fun (key, value) ->
+                client.DefaultRequestHeaders.TryAddWithoutValidation(key, value) |> ignore
+            )
+            let tracedError error = trace, error
+
+            let! (response: HttpResponseMessage) =
+                client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url))
+                |> AsyncResult.ofTaskCatch (HttpError.ApiError >> tracedError)
+
+            do! assertSuccessfulResponse response |> AsyncResult.mapError tracedError
+
+            return trace, response
+        }
+        |> handleResponse (fun response content ->
+            {
+                Content = content
+                StatusCode = response.StatusCode
+                Headers = response.Headers |> Seq.map (fun kv -> kv.Key, (kv.Value |> String.concat ",")) |> List.ofSeq
+            }
+        )
 
     let get headers (Url url): AsyncResult<string, HttpError> =
         asyncResult {
@@ -224,7 +269,7 @@ module Http =
 
             return trace, response
         }
-        |> handleResponse
+        |> handleResponse (fun _ content -> content)
 
     let post<'Request> headers (Url url) (request: 'Request): AsyncResult<string, HttpError> =
         asyncResult {
@@ -262,7 +307,7 @@ module Http =
 
             return trace, response
         }
-        |> handleResponse
+        |> handleResponse (fun _ content -> content)
 
     let put<'Request> headers (Url url) (request: 'Request): AsyncResult<string, HttpError> =
         asyncResult {
@@ -300,4 +345,4 @@ module Http =
 
             return trace, response
         }
-        |> handleResponse
+        |> handleResponse (fun _ content -> content)
