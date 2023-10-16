@@ -20,6 +20,7 @@
     <Compile Include="src/ServiceIdentification.fs" />
     <Compile Include="src/JsonRPC/JsonRPC.fs" />
     <Compile Include="src/WebApplication.fs" />
+    <Compile Include="src/OAuth.fs" />
   </ItemGroup>
 
   <Import Project=".paket\Paket.Restore.targets" />

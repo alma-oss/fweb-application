@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `OAuth` module
 
 ## 10.1.0 - 2023-10-13
 - Add `Http.head` function
