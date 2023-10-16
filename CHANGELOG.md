@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 10.2.0 - 2023-10-16
 - Add `OAuth` module
 
 ## 10.1.0 - 2023-10-13
