@@ -346,3 +346,93 @@ module Http =
             return trace, response
         }
         |> handleResponse (fun _ content -> content)
+(* 
+module HttpDebug =
+    open System.Net.Http
+    open Alma.ErrorHandling
+    open Alma.Authorization
+
+    type DebugResponse = {
+        StatusCode: string
+        QueryString: string
+        Headers: (string * string) list
+        Contents: string
+    }
+
+    let private asString (content: HttpContent) = asyncResult {
+        return! content.ReadAsStringAsync()
+    }
+
+    let get (loggerFactory: ILoggerFactory) path api: AsyncResult<DebugResponse, string> = asyncResult {
+        let logger = loggerFactory.CreateLogger("HttpDebug")
+        let (Url url) = path api
+        logger.LogInformation("Get: {url}", url)
+
+        use client = new HttpClient()
+
+        let! (response: HttpResponseMessage) =
+            client.GetAsync(url.ToString())
+            |> AsyncResult.ofTaskCatch (sprintf "HttpError: %A")
+        logger.LogInformation("Response: {statusCode}", response.StatusCode)
+
+        let! contents = response.Content |> asString |> AsyncResult.mapError (sprintf "ContentError: %A")
+
+        return {
+            StatusCode = response.StatusCode.ToString()
+            QueryString = response.RequestMessage.RequestUri.Query
+            Headers = response.Headers |> Seq.map (fun kv -> kv.Key, (kv.Value |> String.concat ",")) |> List.ofSeq
+            Contents = contents
+        }
+    }
+
+    let private debug (currentApplication: CurrentApplication): HttpHandler = fun next ctx -> task {
+        let request = ctx.Request
+        let! body = async {
+            if request.Body.CanRead then
+                use reader = new StreamReader(request.Body)
+                match! reader.ReadToEndAsync() |> AsyncResult.ofTaskCatch id with
+                | Ok body -> return body
+                | Error err -> return sprintf "Error reading body: %A" err
+            else
+                return "N/A"
+        }
+
+        let headers = request.Headers |> Seq.map (fun kv -> kv.Key, (kv.Value |> String.concat ",")) |> Map.ofSeq
+
+        let clientId =
+            match headers with
+            | JWT.HasJWTAuthorization (JWT.HasClientId (JWT.JWTClientId clientId)) -> Some clientId
+            | _ -> None
+
+        let client =
+            match clientId with
+            | Some requestByClient ->
+                currentApplication.Clients
+                |> List.tryPick (function
+                    | { ClientId = clientId } as client when clientId = requestByClient -> Some client
+                    | _ -> None
+                )
+            | _ -> None
+
+        let orNA = function
+            | Some value -> value
+            | None -> "N/A"
+
+        return! json {|
+            Host = request.Host.Value
+            Path = request.Path
+            PathBase = request.PathBase
+            RouteValues = request.RouteValues
+            Method = request.Method
+            IsHttps = request.IsHttps
+            QueryString = try request.QueryString.ToString() with _ -> "N/A"
+            RequestHeaders = headers
+            RequestBody = body
+            JWTClientId = clientId |> orNA
+            JWTClientName = client
+        |} next ctx
+    }
+
+    let handler currentApplication: HttpHandler =
+        route "/debug" >=> debug currentApplication
+ *)
