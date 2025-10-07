@@ -201,6 +201,19 @@ module Http =
             return! AsyncResult.ofError (HttpError.ResponseError responseError)
     }
 
+    let private useHeaders trace (client: HttpClient) (requestBodyContent: HttpContent option) headers =
+        headers
+        |> Http.inject trace
+        |> List.iter (fun (key, value) ->
+            // Try to add to request headers first, fallback to content headers if it fails
+            if not (client.DefaultRequestHeaders.TryAddWithoutValidation(key, value)) then
+                match requestBodyContent with
+                | None -> ()
+                | Some requestBodyContent ->
+                    try requestBodyContent.Headers.Remove(key) |> ignore with _ -> ()
+                    requestBodyContent.Headers.TryAddWithoutValidation(key, value) |> ignore
+        )
+
     let head headers (Url url): AsyncResult<HeadResponse, HttpError> =
         asyncResult {
             let trace =
@@ -216,11 +229,7 @@ module Http =
 
             use client = new HttpClient()
 
-            headers
-            |> Http.inject trace
-            |> List.iter (fun (key, value) ->
-                client.DefaultRequestHeaders.TryAddWithoutValidation(key, value) |> ignore
-            )
+            headers |> useHeaders trace client None
             let tracedError error = trace, error
 
             let! (response: HttpResponseMessage) =
@@ -254,11 +263,7 @@ module Http =
 
             use client = new HttpClient()
 
-            headers
-            |> Http.inject trace
-            |> List.iter (fun (key, value) ->
-                client.DefaultRequestHeaders.TryAddWithoutValidation(key, value) |> ignore
-            )
+            headers |> useHeaders trace client None
             let tracedError error = trace, error
 
             let! (response: HttpResponseMessage) =
@@ -291,12 +296,7 @@ module Http =
             use client = new HttpClient()
             use requestBodyContent = new StringContent(requestBody, Text.Encoding.UTF8)
 
-            headers
-            |> Http.inject trace
-            |> List.iter (fun (key, value) ->
-                try requestBodyContent.Headers.Remove(key) |> ignore with _ -> ()
-                requestBodyContent.Headers.TryAddWithoutValidation(key, value) |> ignore
-            )
+            headers |> useHeaders trace client (Some requestBodyContent)
             let tracedError error = trace, error
 
             let! (response: HttpResponseMessage) =
@@ -329,12 +329,7 @@ module Http =
             use client = new HttpClient()
             use requestBodyContent = new StringContent(requestBody, Text.Encoding.UTF8)
 
-            headers
-            |> Http.inject trace
-            |> List.iter (fun (key, value) ->
-                try requestBodyContent.Headers.Remove(key) |> ignore with _ -> ()
-                requestBodyContent.Headers.TryAddWithoutValidation(key, value) |> ignore
-            )
+            headers |> useHeaders trace client (Some requestBodyContent)
             let tracedError error = trace, error
 
             let! (response: HttpResponseMessage) =
