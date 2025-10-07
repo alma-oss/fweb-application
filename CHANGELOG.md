@@ -3,6 +3,7 @@
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
 
+## 12.0.1 - 2025-10-07
 - Fix Headers in HTTP functions
 
 ## 12.0.0 - 2025-03-18
