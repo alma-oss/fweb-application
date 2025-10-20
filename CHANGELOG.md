@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 12.1.0 - 2025-10-20
 - Add `OAuth.requestTokenFromURL` function
 
 ## 12.0.1 - 2025-10-07
