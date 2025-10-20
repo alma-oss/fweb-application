@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `OAuth.requestTokenFromURL` function
 
 ## 12.0.1 - 2025-10-07
 - Fix Headers in HTTP functions

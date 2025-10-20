@@ -51,8 +51,7 @@ module OAuth =
 
             "Authorization", sprintf "Basic %s" encoded
 
-    let requestTokenFromCognito region instance (cacheFor: TimeSpan) credentials = asyncResult {
-        let url = sprintf "https://%s.auth.%s.amazoncognito.com/oauth2/token" ((instance |> Instance.concat "-").ToLower()) region
+    let requestTokenFromURL (url: string) (cacheFor: TimeSpan) credentials = asyncResult {
         let key = sprintf "%s--%s" url credentials.ClientId
 
         let requestToken = fun () -> asyncResult {
@@ -91,4 +90,10 @@ module OAuth =
                 | InvalidTypeOfData -> HttpError.ApiErrorMessage "Invalid cache"
                 | LoadFreshDataError error -> error
             )
+    }
+
+    let requestTokenFromCognito region instance (cacheFor: TimeSpan) credentials = asyncResult {
+        let url = sprintf "https://%s.auth.%s.amazoncognito.com/oauth2/token" ((instance |> Instance.concat "-").ToLower()) region
+
+        return! requestTokenFromURL url cacheFor credentials
     }
