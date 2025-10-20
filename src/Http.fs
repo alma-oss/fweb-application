@@ -276,7 +276,7 @@ module Http =
         }
         |> handleResponse (fun _ content -> content)
 
-    let post<'Request> headers (Url url) (request: 'Request): AsyncResult<string, HttpError> =
+    let postContent headers (Url url) requestBody: AsyncResult<string, HttpError> =
         asyncResult {
             let trace =
                 "[HTTP] Post response"
@@ -289,12 +289,8 @@ module Http =
 
             let trace = trace |> Trace.addTags [ "http.url", url ]
 
-            let requestBody =
-                request
-                |> Serialize.toJson
-
             use client = new HttpClient()
-            use requestBodyContent = new StringContent(requestBody, Text.Encoding.UTF8)
+            use requestBodyContent = requestBody
 
             headers |> useHeaders trace client (Some requestBodyContent)
             let tracedError error = trace, error
@@ -308,6 +304,13 @@ module Http =
             return trace, response
         }
         |> handleResponse (fun _ content -> content)
+
+    let post<'Request> headers url (request: 'Request): AsyncResult<string, HttpError> = asyncResult {
+        let requestBody = request |> Serialize.toJson
+        let requestBodyContent = new StringContent(requestBody, Text.Encoding.UTF8)
+
+        return! postContent headers url requestBodyContent
+    }
 
     let put<'Request> headers (Url url) (request: 'Request): AsyncResult<string, HttpError> =
         asyncResult {
@@ -341,7 +344,7 @@ module Http =
             return trace, response
         }
         |> handleResponse (fun _ content -> content)
-(* 
+(*
 module HttpDebug =
     open System.Net.Http
     open Alma.ErrorHandling
