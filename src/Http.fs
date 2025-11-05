@@ -73,7 +73,16 @@ module ResponseError =
     }
 
     let response { ResponseMessage = response } = response
-    let format: ResponseError -> string = sprintf "%A"
+    let format: ResponseError -> string = fun response ->
+        sprintf "%A" {|
+            Uri = response.Uri
+            StatusCode = response.StatusCode
+            Request = response.Request
+            Response =
+                if response.Response.Length <= 200 then response.Response
+                else sprintf "Body.length %A" response.Response.Length
+        |}
+    let formatWithBody: ResponseError -> string = sprintf "%A"
 
     let requestUri { Uri = uri } = uri
     let statusCode { StatusCode = code } = code
