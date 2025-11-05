@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Change `ResponseError.format` to omit full body if it is too large
 
 ## 12.2.0 - 2025-10-20
 - Add `Http.postContent` function
