@@ -1,22 +1,13 @@
 Web Application
 ===============
 
+[![NuGet](https://img.shields.io/nuget/v/Alma.WebApplication.svg)](https://www.nuget.org/packages/Alma.WebApplication)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Alma.WebApplication.svg)](https://www.nuget.org/packages/Alma.WebApplication)
+[![Tests](https://github.com/alma-oss/fweb-application/actions/workflows/tests.yaml/badge.svg)](https://github.com/alma-oss/fweb-application/actions/workflows/tests.yaml)
+
 > Common utils, types, handlers, ... for a web application.
 
 ## Install
-
-Add following into `paket.dependencies`
-```
-source https://nuget.pkg.github.com/almacareer/index.json username: "%PRIVATE_FEED_USER%" password: "%PRIVATE_FEED_PASS%"
-# LMC Nuget dependencies:
-nuget Alma.WebApplication
-```
-
-NOTE: For local development, you have to create ENV variables with your github personal access token.
-```sh
-export PRIVATE_FEED_USER='{GITHUB USERNANME}'
-export PRIVATE_FEED_PASS='{TOKEN}'	# with permissions: read:packages
-```
 
 Add following into `paket.references`
 ```

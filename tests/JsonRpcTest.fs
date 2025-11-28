@@ -8,7 +8,7 @@ open System.IO
 open System.Net
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Primitives
-open Alma.ErrorHandling
+open Feather.ErrorHandling
 open Alma.Serializer
 open Alma.WebApplication.JsonRpc
 

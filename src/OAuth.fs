@@ -7,7 +7,7 @@ module OAuth =
     open System.Net.Http
     open Alma.ServiceIdentification
     open Alma.State
-    open Alma.ErrorHandling
+    open Feather.ErrorHandling
     open Alma.WebApplication
     open Alma.WebApplication.Http
 

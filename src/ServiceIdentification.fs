@@ -3,7 +3,7 @@ namespace Alma.WebApplication
 open System.Net
 open Microsoft.AspNetCore.Http
 open Alma.ServiceIdentification
-open Alma.ErrorHandling
+open Feather.ErrorHandling
 open Alma.WebApplication.Http
 
 [<RequireQualifiedAccess>]
