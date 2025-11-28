@@ -17,7 +17,7 @@ module Metrics =
     open Alma.ServiceIdentification
     open Alma.Metrics
     open Alma.Metrics.ServiceStatus
-    open Alma.ErrorHandling
+    open Feather.ErrorHandling
 
     let metricStatus (Context context) = context |> sprintf "%s_status" |> MetricName.createOrFail
 

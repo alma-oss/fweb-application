@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Move repo
 
 ## 12.3.0 - 2025-11-05
 - Change `ResponseError.format` to omit full body if it is too large

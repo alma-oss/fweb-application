@@ -13,7 +13,7 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
 open Giraffe
-open Alma.ErrorHandling
+open Feather.ErrorHandling
 open Alma.Tracing
 open Alma.Tracing.Extension
 
@@ -356,7 +356,7 @@ module Http =
 (*
 module HttpDebug =
     open System.Net.Http
-    open Alma.ErrorHandling
+    open Feather.ErrorHandling
     open Alma.Authorization
 
     type DebugResponse = {

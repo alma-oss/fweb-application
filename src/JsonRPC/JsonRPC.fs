@@ -12,7 +12,7 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
-open Alma.ErrorHandling
+open Feather.ErrorHandling
 open Alma.WebApplication
 open Alma.ServiceIdentification
 
