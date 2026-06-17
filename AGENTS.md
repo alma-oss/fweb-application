@@ -1,5 +1,9 @@
 # Alma.WebApplication (fweb-application)
 
+This repo ships Agent Skill for the `Alma.WebApplication` library. Compatible agents discover it automatically; see `.agents/skills/fweb-application/SKILL.md`.
+
+## Project Purpose
+
 Open-source F# library (`Alma.WebApplication` NuGet package) providing common utilities, types, HTTP handlers, metrics, service identification helpers, JSON-RPC support, and OAuth integration for Alma platform web applications built on Giraffe (ASP.NET Core). Used by downstream microservices as a shared foundation for building web APIs.
 
 ## Tech Stack
