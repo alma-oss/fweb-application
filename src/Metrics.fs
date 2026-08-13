@@ -106,9 +106,9 @@ module Metrics =
 
     let serviceStatus instance = result {
         let! markAsEnabled =
-            ServiceStatus.markAsEnabled instance Audience.Sys
+            ServiceStatus.markAsEnabled instance (Audience "sys")
         let! markAsDisabled =
-            ServiceStatus.markAsDisabled instance Audience.Sys
+            ServiceStatus.markAsDisabled instance (Audience "sys")
 
         return { MarkAsEnabled = markAsEnabled; MarkAsDisabled = markAsDisabled }
     }

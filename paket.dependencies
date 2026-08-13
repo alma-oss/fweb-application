@@ -7,7 +7,7 @@ nuget FsHttp ~> 15.0
 nuget Giraffe ~> 8.0
 
 nuget Alma.JsonApi ~> 11.0
-nuget Alma.Metrics ~> 12.0
+nuget Alma.Metrics ~> 13.0
 
 nuget Expecto
 nuget YoloDev.Expecto.TestSdk
