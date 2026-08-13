@@ -63,7 +63,7 @@ module Metrics =
         let createKeyForStatus instance =
             createKey instance None (SimpleDataSetKeys [])
 
-        let private createKeyForTotalRequestDuration instance request =
+        let private createKeyForRequestDuration instance request =
             SimpleDataSetKeys (
                 [
                     "request", request.Request
@@ -76,23 +76,17 @@ module Metrics =
             )
             |> createKey instance None
 
-        let metricRequestDurationOk = MetricName.createOrFail "total_request_duration_ok"
-        let metricRequestDurationNotice = MetricName.createOrFail "total_request_duration_notice"
-        let metricRequestDurationWarning = MetricName.createOrFail "total_request_duration_warning"
-        let metricRequestDurationCritical = MetricName.createOrFail "total_request_duration_critical"
+        let requestDurationHistogram =
+            HistogramMetric.createOrFail
+                "request_duration_seconds"
+                (HistogramBuckets.create [ 0.5; 1.0; 10.0 ])
 
         let incrementRequestDuration instance request =
-            let metric =
-                match request.DurationMilliseconds with
-                | duration when duration <= 500L -> metricRequestDurationOk
-                | duration when duration <= 1000L -> metricRequestDurationNotice
-                | duration when duration <= 10000L -> metricRequestDurationWarning
-                | _ -> metricRequestDurationCritical
-
             request
-            |> createKeyForTotalRequestDuration instance
-            |> State.incrementMetricSetValue (Int 1) metric
-            |> ignore
+            |> createKeyForRequestDuration instance
+            |> State.observeHistogramSetValue
+                requestDurationHistogram
+                (request.DurationMilliseconds |> TimeSpan.FromMilliseconds |> _.TotalSeconds)
 
     let createDataSetKey = InternalState.createKey
 
@@ -131,15 +125,21 @@ module Metrics =
 
         let counter = metric MetricType.Counter
 
+        let histogram description histogramMetric =
+            histogramMetric
+            |> State.getHistogram
+            |> function
+                | Some histogram ->
+                    { histogram with Description = Some description }
+                    |> Histogram.format
+                | _ -> ""
+
     let currentState (instance: Instance) applicationMetrics _ =
         [
             instance.Context |> metricStatus |> Format.metric MetricType.Gauge "Current instance status."
             ServiceStatus.getFormattedValue()
 
-            metricRequestDurationOk |> Format.counter "Total requests with duration under 0.5s."
-            metricRequestDurationNotice |> Format.counter "Total requests with duration 0.5s - 1s."
-            metricRequestDurationWarning |> Format.counter "Total requests with duration 1s - 10s."
-            metricRequestDurationCritical |> Format.counter "Total requests with duration over 10s."
+            requestDurationHistogram |> Format.histogram "Request duration in seconds."
         ]
         @ applicationMetrics
         |> String.concat ""
