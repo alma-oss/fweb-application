@@ -17,7 +17,7 @@ Open-source F# library (`Alma.WebApplication` NuGet package) providing common ut
   - `FsHttp` ~> 15.0 (HTTP client DSL)
   - `Giraffe` ~> 8.0 (functional web framework on ASP.NET Core)
   - `Alma.JsonApi` ~> 11.0 (JSON:API error response types)
-  - `Alma.Metrics` ~> 12.0 (metrics collection and reporting)
+  - `Alma.Metrics` ~> 13.0 (metrics collection and reporting)
   - (Transitive) `Alma.Tracing` (distributed tracing), `Alma.ServiceIdentification` (Box model), `Alma.State` (concurrent caching), `Alma.Serializer`
 
 ## Commands

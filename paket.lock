@@ -18,7 +18,7 @@ NUGET
       Serilog (>= 4.3 < 5.0)
       Serilog.Extensions.Logging (>= 10.0 < 11.0)
       Serilog.Sinks.Console (>= 6.1.1 < 7.0)
-    Alma.Metrics (12.0)
+    Alma.Metrics (13.0)
       Alma.ServiceIdentification (>= 11.0 < 12.0)
       Feather.ErrorHandling (>= 2.0 < 3.0)
       FSharp.Core (>= 10.0.102 < 11.0)

@@ -2,6 +2,9 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Update dependencies
+    - `Alma.Metrics` 13
+- [**BC**] Replace `total_request_duration_ok|notice|warning|critical` counters with `request_duration_seconds` histogram (buckets 0.5, 1, 10 seconds)
 
 ## 14.0.0 - 2026-01-29
 - [**BC**] Use net10.0
