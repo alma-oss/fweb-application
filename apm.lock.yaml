@@ -1,0 +1,113 @@
+lockfile_version: '1'
+dependencies: []
+deployments:
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fweb-application
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fweb-application/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:03de005f3431f242c9d9d458a74341dda17abaf8e6682b2007858ba5cf33142c
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fweb-application/references/anti-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:7eb3570a0226439318620f8b6493bf5538e9f9a67aac00503a5bd9f78f136cb1
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fweb-application/references/examples.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:f6f9da9dc414b9d65316fda87c5747c9b8e492ad8f25e6edb336081a18b6a34a
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fweb-application/references/preferred-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:5980aa58c99267bddb8163e5ee8a579ba9329d92f21ca8aa91c0d807827dce39
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fweb-application
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fweb-application/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:03de005f3431f242c9d9d458a74341dda17abaf8e6682b2007858ba5cf33142c
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fweb-application/references/anti-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:7eb3570a0226439318620f8b6493bf5538e9f9a67aac00503a5bd9f78f136cb1
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fweb-application/references/examples.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:f6f9da9dc414b9d65316fda87c5747c9b8e492ad8f25e6edb336081a18b6a34a
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fweb-application/references/preferred-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:5980aa58c99267bddb8163e5ee8a579ba9329d92f21ca8aa91c0d807827dce39
+local_deployed_files:
+- .agents/skills/fweb-application
+- .agents/skills/fweb-application/SKILL.md
+- .agents/skills/fweb-application/references/anti-patterns.md
+- .agents/skills/fweb-application/references/examples.md
+- .agents/skills/fweb-application/references/preferred-patterns.md
+- .claude/skills/fweb-application
+- .claude/skills/fweb-application/SKILL.md
+- .claude/skills/fweb-application/references/anti-patterns.md
+- .claude/skills/fweb-application/references/examples.md
+- .claude/skills/fweb-application/references/preferred-patterns.md
+local_deployed_file_hashes:
+  .agents/skills/fweb-application/SKILL.md: sha256:03de005f3431f242c9d9d458a74341dda17abaf8e6682b2007858ba5cf33142c
+  .agents/skills/fweb-application/references/anti-patterns.md: sha256:7eb3570a0226439318620f8b6493bf5538e9f9a67aac00503a5bd9f78f136cb1
+  .agents/skills/fweb-application/references/examples.md: sha256:f6f9da9dc414b9d65316fda87c5747c9b8e492ad8f25e6edb336081a18b6a34a
+  .agents/skills/fweb-application/references/preferred-patterns.md: sha256:5980aa58c99267bddb8163e5ee8a579ba9329d92f21ca8aa91c0d807827dce39
+  .claude/skills/fweb-application/SKILL.md: sha256:03de005f3431f242c9d9d458a74341dda17abaf8e6682b2007858ba5cf33142c
+  .claude/skills/fweb-application/references/anti-patterns.md: sha256:7eb3570a0226439318620f8b6493bf5538e9f9a67aac00503a5bd9f78f136cb1
+  .claude/skills/fweb-application/references/examples.md: sha256:f6f9da9dc414b9d65316fda87c5747c9b8e492ad8f25e6edb336081a18b6a34a
+  .claude/skills/fweb-application/references/preferred-patterns.md: sha256:5980aa58c99267bddb8163e5ee8a579ba9329d92f21ca8aa91c0d807827dce39
