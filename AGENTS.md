@@ -57,6 +57,7 @@ src/
                          #   ResponseError handling
                          #   HttpError discriminated union
                          #   Http.head / Http.get / Http.post / Http.postContent / Http.put
+                         #   Http.WithClient.* — same calls through a caller-owned HttpClient
                          #   All requests are traced via Alma.Tracing
                          #   Query parameter anonymization
   Metrics.fs             # Request duration metrics:
@@ -104,7 +105,7 @@ build/
 ## Architecture & Key Modules
 
 ### HTTP Client (`Http` module)
-All HTTP methods (`head`, `get`, `post`, `postContent`, `put`) are traced via `Alma.Tracing`. Each request:
+All HTTP methods (`head`, `get`, `post`, `postContent`, `put`) are traced via `Alma.Tracing`. The `Http.WithClient` variants take a caller-owned `HttpClient` (for a custom timeout, handler, or connection reuse); the plain functions create and dispose a client per call and delegate to them. Headers go on the request message, never on the client's default headers. Each request:
 1. Creates a child span with method, URL, and component tags
 2. Sends the request with injected tracing headers
 3. Handles response — success returns content, error returns `HttpError`

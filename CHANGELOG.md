@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `Http.WithClient` with `head`, `get`, `postContent`, `post` and `put` taking a caller-owned `HttpClient` (custom timeout, handler, reuse)
+- Set request headers on the `HttpRequestMessage` instead of the client's default headers
 
 ## 15.0.0 - 2026-08-14
 - Update dependencies
