@@ -210,149 +210,107 @@ module Http =
             return! AsyncResult.ofError (HttpError.ResponseError responseError)
     }
 
-    let private useHeaders trace (client: HttpClient) (requestBodyContent: HttpContent option) headers =
+    let private traceName (method: HttpMethod) =
+        let name = method.Method
+        sprintf "[HTTP] %s%s response" (name.Substring(0, 1)) (name.Substring(1).ToLowerInvariant())
+
+    let private createRequest trace (method: HttpMethod) (Url url) (content: HttpContent option) headers =
+        let request = new HttpRequestMessage(method, url)
+        content |> Option.iter (fun content -> request.Content <- content)
+
         headers
         |> Http.inject trace
         |> List.iter (fun (key, value) ->
-            // Try to add to request headers first, fallback to content headers if it fails
-            if not (client.DefaultRequestHeaders.TryAddWithoutValidation(key, value)) then
-                match requestBodyContent with
+            if not (request.Headers.TryAddWithoutValidation(key, value)) then
+                match content with
                 | None -> ()
-                | Some requestBodyContent ->
-                    try requestBodyContent.Headers.Remove(key) |> ignore with _ -> ()
-                    requestBodyContent.Headers.TryAddWithoutValidation(key, value) |> ignore
+                | Some content ->
+                    try content.Headers.Remove(key) |> ignore with _ -> ()
+                    content.Headers.TryAddWithoutValidation(key, value) |> ignore
         )
 
-    let head headers (Url url): AsyncResult<HeadResponse, HttpError> =
-        asyncResult {
-            let trace =
-                "[HTTP] Head response"
-                |> Trace.ChildOf.continueOrStart Trace.Active.current
-                |> Trace.addTags [
-                    "component", (sprintf "fWebApplication (%s)" AssemblyVersionInformation.AssemblyVersion)
-                    "http.method", "HEAD"
-                    "span.kind", "client"
-                ]
+        request
 
-            let trace = trace |> Trace.addTags [ "http.url", url ]
+    let private send (client: HttpClient) (method: HttpMethod) headers (Url url) content: AsyncResult<Trace * HttpResponseMessage, Trace * HttpError> = asyncResult {
+        let trace =
+            method
+            |> traceName
+            |> Trace.ChildOf.continueOrStart Trace.Active.current
+            |> Trace.addTags [
+                "component", (sprintf "fWebApplication (%s)" AssemblyVersionInformation.AssemblyVersion)
+                "http.method", method.Method
+                "span.kind", "client"
+            ]
 
-            use client = new HttpClient()
+        let trace = trace |> Trace.addTags [ "http.url", url ]
 
-            headers |> useHeaders trace client None
-            let tracedError error = trace, error
+        use request = headers |> createRequest trace method (Url url) content
+        let tracedError error = trace, error
 
-            let! (response: HttpResponseMessage) =
-                client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url))
-                |> AsyncResult.ofTaskCatch (HttpError.ApiError >> tracedError)
+        let! (response: HttpResponseMessage) =
+            client.SendAsync(request)
+            |> AsyncResult.ofTaskCatch (HttpError.ApiError >> tracedError)
 
-            do! assertSuccessfulResponse response |> AsyncResult.mapError tracedError
+        do! assertSuccessfulResponse response |> AsyncResult.mapError tracedError
 
-            return trace, response
-        }
-        |> handleResponse (fun response content ->
-            {
-                Content = content
-                StatusCode = response.StatusCode
-                Headers = response.Headers |> Seq.map (fun kv -> kv.Key, (kv.Value |> String.concat ",")) |> List.ofSeq
-            }
-        )
-
-    let get headers (Url url): AsyncResult<string, HttpError> =
-        asyncResult {
-            let trace =
-                "[HTTP] Get response"
-                |> Trace.ChildOf.continueOrStart Trace.Active.current
-                |> Trace.addTags [
-                    "component", (sprintf "fWebApplication (%s)" AssemblyVersionInformation.AssemblyVersion)
-                    "http.method", "GET"
-                    "span.kind", "client"
-                ]
-
-            let trace = trace |> Trace.addTags [ "http.url", url ]
-
-            use client = new HttpClient()
-
-            headers |> useHeaders trace client None
-            let tracedError error = trace, error
-
-            let! (response: HttpResponseMessage) =
-                client.GetAsync(url)
-                |> AsyncResult.ofTaskCatch (HttpError.ApiError >> tracedError)
-
-            do! assertSuccessfulResponse response |> AsyncResult.mapError tracedError
-
-            return trace, response
-        }
-        |> handleResponse (fun _ content -> content)
-
-    let postContent headers (Url url) requestBody: AsyncResult<string, HttpError> =
-        asyncResult {
-            let trace =
-                "[HTTP] Post response"
-                |> Trace.ChildOf.continueOrStart Trace.Active.current
-                |> Trace.addTags [
-                    "component", (sprintf "fWebApplication (%s)" AssemblyVersionInformation.AssemblyVersion)
-                    "http.method", "POST"
-                    "span.kind", "client"
-                ]
-
-            let trace = trace |> Trace.addTags [ "http.url", url ]
-
-            use client = new HttpClient()
-            use requestBodyContent = requestBody
-
-            headers |> useHeaders trace client (Some requestBodyContent)
-            let tracedError error = trace, error
-
-            let! (response: HttpResponseMessage) =
-                client.PostAsync(url, requestBodyContent)
-                |> AsyncResult.ofTaskCatch (HttpError.ApiError >> tracedError)
-
-            do! assertSuccessfulResponse response |> AsyncResult.mapError tracedError
-
-            return trace, response
-        }
-        |> handleResponse (fun _ content -> content)
-
-    let post<'Request> headers url (request: 'Request): AsyncResult<string, HttpError> = asyncResult {
-        let requestBody = request |> Serialize.toJson
-        let requestBodyContent = new StringContent(requestBody, Text.Encoding.UTF8)
-
-        return! postContent headers url requestBodyContent
+        return trace, response
     }
 
-    let put<'Request> headers (Url url) (request: 'Request): AsyncResult<string, HttpError> =
-        asyncResult {
-            let trace =
-                "[HTTP] Put response"
-                |> Trace.ChildOf.continueOrStart Trace.Active.current
-                |> Trace.addTags [
-                    "component", (sprintf "fWebApplication (%s)" AssemblyVersionInformation.AssemblyVersion)
-                    "http.method", "PUT"
-                    "span.kind", "client"
-                ]
+    let private headResponse (response: HttpResponseMessage) content = {
+        Content = content
+        StatusCode = response.StatusCode
+        Headers = response.Headers |> Seq.map (fun kv -> kv.Key, (kv.Value |> String.concat ",")) |> List.ofSeq
+    }
 
-            let trace = trace |> Trace.addTags [ "http.url", url ]
+    /// Traced HTTP calls through a caller-owned `HttpClient`, which keeps its own configuration (timeout, handler, base address).
+    /// Headers, including the injected tracing headers, are set on the request message only, so the client can be reused.
+    [<RequireQualifiedAccess>]
+    module WithClient =
+        let head (client: HttpClient) headers url: AsyncResult<HeadResponse, HttpError> =
+            send client HttpMethod.Head headers url None
+            |> handleResponse headResponse
 
-            let requestBody =
-                request
-                |> Serialize.toJson
+        let get (client: HttpClient) headers url: AsyncResult<string, HttpError> =
+            send client HttpMethod.Get headers url None
+            |> handleResponse (fun _ content -> content)
 
-            use client = new HttpClient()
-            use requestBodyContent = new StringContent(requestBody, Text.Encoding.UTF8)
+        let postContent (client: HttpClient) headers url (requestBody: HttpContent): AsyncResult<string, HttpError> =
+            send client HttpMethod.Post headers url (Some requestBody)
+            |> handleResponse (fun _ content -> content)
 
-            headers |> useHeaders trace client (Some requestBodyContent)
-            let tracedError error = trace, error
+        let post<'Request> (client: HttpClient) headers url (request: 'Request): AsyncResult<string, HttpError> =
+            let requestBody = request |> Serialize.toJson
+            postContent client headers url (new StringContent(requestBody, Text.Encoding.UTF8))
 
-            let! (response: HttpResponseMessage) =
-                client.PutAsync(url, requestBodyContent)
-                |> AsyncResult.ofTaskCatch (HttpError.ApiError >> tracedError)
+        let put<'Request> (client: HttpClient) headers url (request: 'Request): AsyncResult<string, HttpError> =
+            let requestBody = request |> Serialize.toJson
+            send client HttpMethod.Put headers url (Some (new StringContent(requestBody, Text.Encoding.UTF8)))
+            |> handleResponse (fun _ content -> content)
 
-            do! assertSuccessfulResponse response |> AsyncResult.mapError tracedError
+    let head headers url: AsyncResult<HeadResponse, HttpError> = asyncResult {
+        use client = new HttpClient()
+        return! WithClient.head client headers url
+    }
 
-            return trace, response
-        }
-        |> handleResponse (fun _ content -> content)
+    let get headers url: AsyncResult<string, HttpError> = asyncResult {
+        use client = new HttpClient()
+        return! WithClient.get client headers url
+    }
+
+    let postContent headers url requestBody: AsyncResult<string, HttpError> = asyncResult {
+        use client = new HttpClient()
+        return! WithClient.postContent client headers url requestBody
+    }
+
+    let post<'Request> headers url (request: 'Request): AsyncResult<string, HttpError> = asyncResult {
+        use client = new HttpClient()
+        return! WithClient.post client headers url request
+    }
+
+    let put<'Request> headers url (request: 'Request): AsyncResult<string, HttpError> = asyncResult {
+        use client = new HttpClient()
+        return! WithClient.put client headers url request
+    }
 (*
 module HttpDebug =
     open System.Net.Http

@@ -34,7 +34,7 @@ module LmcEnvironment =
 [<RequireQualifiedAccess>]
 module Setup =
     let allowAnyCORS (app: IApplicationBuilder) =
-        app.UseCors(new Action<_>(fun (corsPolicy: Infrastructure.CorsPolicyBuilder) ->
+        app.UseCors(Action<_>(fun (corsPolicy: Infrastructure.CorsPolicyBuilder) ->
             corsPolicy
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
